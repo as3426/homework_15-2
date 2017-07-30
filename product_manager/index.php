@@ -1,9 +1,22 @@
+ <link rel="stylesheet" type="text/css"
+           href="/~as3426/homework_15-2/main.css">
+
+
 <?php
 require('../model/database.php');
 require('../model/category.php');
 require('../model/category_db.php');
 require('../model/product.php');
 require('../model/product_db.php');
+require('../model/fields.php');
+require('../model/validate.php');
+
+
+$validate = new Validate();
+$fields = $validate->getFields();
+$fields->addField('code');
+$fields->addField('name');
+$fields->addField('price', 'Must be a valid number.');
 
 $action = filter_input(INPUT_POST, 'action');
 if ($action == NULL) {
@@ -48,18 +61,26 @@ if ($action == 'list_products') {
             FILTER_VALIDATE_INT);
     $code = filter_input(INPUT_POST, 'code');
     $name = filter_input(INPUT_POST, 'name');
-    $price = filter_input(INPUT_POST, 'price', FILTER_VALIDATE_FLOAT);
-    if ($category_id == NULL || $category_id == FALSE || $code == NULL || 
-            $name == NULL || $price == NULL || $price == FALSE) {
-        $error = "Invalid product data. Check all fields and try again.";
-        include('../errors/error.php');
-    } else {
-        $current_category = CategoryDB::getCategory($category_id);
-        $product = new Product($current_category, $code, $name, $price);
-        ProductDB::addProduct($product);
+    $price = filter_input(INPUT_POST, 'price');
 
-        // Display the Product List page for the current category
-        header("Location: .?category_id=$category_id");
-    }
+  // Validate form data
+      $validate->text('code', $code, true, 1, 10);
+      $validate->text('name', $name);
+      $validate->number('price', $price);
+// Load appropriate view based on hasErrors
+    if ($fields->hasErrors()) {
+            $categories = CategoryDB::getCategories();
+	            include 'product_add.php';
+       } else {
+
+         $current_category = CategoryDB::getCategory($category_id);
+         $product = new Product($current_category, $code, $name, $price);
+	 ProductDB::addProduct($product);
+ // Display the Product List page for the current category
+         header("Location: .?category_id=$category_id");
+	     }
+
 }
 ?>
+
+
