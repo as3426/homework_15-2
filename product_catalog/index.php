@@ -1,3 +1,6 @@
+ <link rel="stylesheet" type="text/css"
+           href="/~as3426/homework_15-2/main.css">
+
 <?php
 require('../model/database.php');
 require('../model/category.php');
