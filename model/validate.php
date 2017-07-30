@@ -10,6 +10,29 @@ class Validate {
         return $this->fields;
     }
 
+
+// Validate a generic number field
+    public function number($name, $value,
+                $required = true)
+	{
+		// Get Field object
+		$field = $this->fields->getField($name);
+      // Call the text method and exit if it yields an error
+        $this->text($name, $value, $required);
+	        if ($field->hasError()) { return; }
+ // Check field and set or clear error message
+	         if (!is_numeric($value))
+		 {
+	             $field->setErrorMessage('Must be a valid number.');
+		            
+		  } else {
+			                 $field->clearErrorMessage();
+		  }
+        }
+
+
+
+
     // Validate a generic text field
     public function text($name, $value,
             $required = true, $min = 1, $max = 255) {
